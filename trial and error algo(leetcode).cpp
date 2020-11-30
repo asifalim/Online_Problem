@@ -12,7 +12,7 @@ int smallestDistancePair(vector<int>&a,int k)
         for(int i=0,j=0; i<a.size(); i++)
         {
             while(j<a.size() and a[j]<=a[i]+mid)j++;
-            cnt+=j-i-1;       //cnt implies how many pair distance less or equal to mid;
+            cnt+=j-i-1;       //cnt implies how many pair distance less or equal to mid(absolute difference);
         }
         if(cnt<k)low=mid+1;
         else high=mid;
