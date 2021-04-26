@@ -1,93 +1,108 @@
 #include<bits/stdc++.h>
-#define ll long long int
 using namespace std;
-int dr[]= {0,1,0,-1};
-int dy[]= {1,0,-1,0};
-bool check(int i,int j,int n,int m)
+#define fast ios_base::sync_with_stdio(false);cin.tie(0);cout.tie(0);
+#define ll long long int
+#define dbg(a,b,c) cout<<a<<"  "<<b<<"  "<<c<<endl;
+#define mem(a,b) memset(a,b,sizeof(a))
+#define endl "\n"
+#define INF 1e18
+#define w(t) cin>>t;while(t--)
+#define kill(a) {cout<<a<<endl;continue;}
+#define pi  2 * acos(0.0)
+#define case(k) cout<<"Case "<<++kk<<": ";
+int t,kk=0,ans=0,tot=0,k;
+const int mxN=1e3+3,mod=1e9+7;
+vector<pair<int,int>>v;
+char ch[mxN][mxN];
+int dp[mxN][mxN],dp1[mxN][mxN],N,M,X,Y,dx[]= {-1,1,0,0},dy[]= {0,0,-1,1};
+bool check(int i,int j)
 {
-    if(i>=0 and i<n and j>=0 and j<m)return true;
-    return false;
+    return (~i and ~j and i<N and j<M and dp[i][j]<0 and (ch[i][j]=='.' or ch[i][j]=='A'));
 }
-int main()
+bool chk(int i,int j)
 {
-    int n,m,i,j;
-    cin>>n>>m;
-    string str,s;
-    bool found=false;
-    vector<pair<int,int>>mon;
-    queue<pair<pair<int,int>,bool>>q;
-    pair<int,int>x,foundpos,prev={-1,-1};
-    vector<vector<bool>>issafe(n,vector<bool>(m));
-    vector<vector<bool>>vis(n,vector<bool>(m,false));
-    vector<vector<pair<int,int>>>lst(n,vector<pair<int,int>>(m,make_pair(-1,-1)));
-    for(i=0; i<n; i++)
-    {
-        cin>>str;
-        for(j=0; j<m; j++)
-        {
-            issafe[i][j]=(str[j]!='#');
-            if(str[j]=='M')mon.push_back({i,j}),issafe[i][j]=false;
-            else if(str[j]=='A')x= {i,j};
-        }
-    }
-    for(auto &i:mon)q.push({i,false});
-    q.push({x,true});
+    return (~i and ~j and i<N and j<M and dp1[i][j]<0 and ch[i][j]=='.');
+}
+bool ck(int i,int j,int cn)
+{
+    return (~i and ~j and i<N and j<M and dp1[i][j]==cn-1);
+}
+void bfs1()
+{
+    queue<pair<int,int>>q;mem(dp,-1);
+    for(auto i:v)q.push({i.first,i.second}),dp[i.first][i.second]=0;
     while(!q.empty())
     {
-        int sz=q.size();
-        while(sz--)
+        int x=q.front().first,y=q.front().second;
+        q.pop();
+        for(int i=0; i<4; i++)
         {
-            auto u=q.front();
-            q.pop();
-            if(u.second)
-            {
-                if(!issafe[u.first.first][u.first.second])continue;
-                vis[u.first.first][u.first.second]=true;
-                if(u.first.first==0 or u.first.first==n-1 or u.first.second==0 or u.first.second==m-1)
-                {
-                    foundpos= {u.first.first,u.first.second};
-                    found=true;
-                    break;
-                }
-            }
-            else issafe[u.first.first][u.first.second]=false;
-            for(i=0; i<4; i++)
-            {
-                int X=u.first.first+dr[i],Y=u.first.second+dy[i];
-                if(check(X,Y,n,m) and issafe[X][Y])
-                {
-                    if(!u.second or (u.second and !vis[X][Y]))
-                    {
-                        q.push({{X,Y},u.second});
-                        if(u.second)
-                            lst[X][Y]= {u.first.first,u.first.second};
-                    }
-                }
-            }
-
+           int X=x+dx[i],Y=y+dy[i];
+            if(check(X,Y))dp[X][Y]=dp[x][y]+1,q.push({X,Y});
         }
-        if(found)break;
     }
-    if(!found)
+    /*for(int i=0;i<N;i++)
     {
-        cout<<"NO"<<endl;
-        return 0;
-    }
-    cout<<"YES"<<endl;
-    for(i=foundpos.first,j=foundpos.second; i!=-1 or j!=-1; tie(i,j)=lst[i][j])
+        for(int j=0;j<M;j++)cout<<dp[i][j]<<" ";cout<<endl;
+    }*/
+}
+void bfs2(int n,int m)
+{
+    queue<pair<int,int>>q;
+    q.push({n,m});bool f=false;int x,y;
+    mem(dp1,-1);
+    dp1[n][m]=0;
+    while(!q.empty())
     {
-        if(prev.first==-1 and prev.second==-1)
+        x=q.front().first,y=q.front().second;
+        q.pop();
+        for(int i=0; i<4; i++)
         {
-            prev= {i,j};
-            continue;
+           int X=x+dx[i],Y=y+dy[i];
+            if(X<0 or Y<0 or X>=N or Y>=M){f=true;break;}
+            if(!chk(X,Y))continue;
+            dp1[X][Y]=dp1[x][y]+1;
+            if(dp1[X][Y]<dp[X][Y] or dp[x][y]<0)q.push({X,Y});
         }
-        if(i==prev.first and j+1==prev.second)     s+='R';
-        else if(i==prev.first and j-1==prev.second)s+='L';
-        else if(i+1==prev.first and j==prev.second)s+='D';
-        else if(i-1==prev.first and j==prev.second)s+='U';
-        prev= {i,j};
+        if(f)break;
     }
-    reverse(s.begin(),s.end());
-    cout<<s.size()<<endl<<s<<endl;
+    /*for(int i=0;i<N;i++)
+    {
+        for(int j=0;j<M;j++)cout<<dp1[i][j]<<" ";cout<<endl;
+    }*/
+   if(!f){cout<<"NO"<<endl;return;}
+   cout<<"YES"<<endl<<dp1[x][y]<<endl;int cn=dp1[x][y];string s;
+   while(cn)
+   {
+       if(ck(x-1,y,cn))x--,s+='D';
+       if(ck(x+1,y,cn))x++,s+='U';
+       if(ck(x,y-1,cn))y--,s+='R';
+       if(ck(x,y+1,cn))y++,s+='L';
+       cn--;
+   }
+   reverse(s.begin(),s.end());
+   cout<<s<<endl;
+}
+signed main()
+{
+    //fast;
+    //w(t)
+    //{
+        int n,m,a,b,c,d,e,i,j=0,sm=0,sm1=0,cn=0,cn1=0,mx=INT_MIN,mn=INT_MAX,mx1;
+        string s,ss,sr;
+        bool f=true,ff=false;
+        cin>>N>>M;
+        for(i=0; i<N; i++)
+        {
+            for(j=0; j<M; j++)
+            {
+                cin>>ch[i][j];
+                if(ch[i][j]=='A')cn=i,cn1=j;
+                if(ch[i][j]=='M')v.push_back({i,j});
+            }
+        }
+        bfs1();
+        bfs2(cn,cn1);
+    //}
     return 0;
 }
