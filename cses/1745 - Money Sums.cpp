@@ -25,6 +25,16 @@ int run(int i,int sum)
     if(ar[i]<=sum)run(i-1,sum-ar[i]);
     return dp[i][sum]=not_taken;
 }
+
+/*
+int sm=0;dp[0]=true;
+    for(int i=0;i<n;i++)
+    {
+      sm+=ar[i];
+      for(int j=sm;j>=ar[i];j--)dp[j]=(dp[j-ar[i]]?1:dp[j]);
+    }
+    for(int i=1;i<=sm;i++)if(dp[i])ans.push_back(i);
+*/
 signed main()
 {
     //fast;
