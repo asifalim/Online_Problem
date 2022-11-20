@@ -1,3 +1,6 @@
+//Practice problem---->https://codeforces.com/gym/100589/problem/G
+//Practice problem---->https://codeforces.com/contest/401/problem/D
+
 #include<bits/stdc++.h>
 using namespace std;
 #define fast ios_base::sync_with_stdio(false);cin.tie(0);cout.tie(0);
