@@ -44,6 +44,5 @@ signed main()
         n=s.size();
         mem(dp,-1);
         cout<<"Case "<<cs++<<": "<<run(0,0)<<endl;
-
     }
 }
